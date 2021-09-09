@@ -13,13 +13,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("/mmedias")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class Controller {
 
 
     @PostMapping
-    public ResponseEntity<String> post(@RequestParam String login) throws Exception{
+    public ResponseEntity<String> post(@RequestBody String login) throws Exception{
 
         var requestPost = HttpRequest.newBuilder()
                 .uri(new URI("https://www2.maua.br/mauanet.2.0"))
