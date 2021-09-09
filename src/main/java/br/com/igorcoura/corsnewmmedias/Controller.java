@@ -21,12 +21,17 @@ public class Controller {
 
 
     @PostMapping
-    public ResponseEntity<String> post(@RequestBody String login) throws Exception{
+    public ResponseEntity<String> post(String email, String password) throws Exception{
+
+        Map<Object, Object> data = new HashMap<>();
+        data.put("maua_email", email);
+        data.put("maua_senha", password);
+        data.put("maua_submit", "Enviar");
 
         var requestPost = HttpRequest.newBuilder()
                 .uri(new URI("https://www2.maua.br/mauanet.2.0"))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(login))
+                .POST(buildFormDataFromMap(data))
                 .build();
         var responsePost = HttpClient.newBuilder()
                 .build().send(requestPost, HttpResponse.BodyHandlers.ofString());
@@ -45,5 +50,19 @@ public class Controller {
         else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
         }
+    }
+
+    private static HttpRequest.BodyPublisher buildFormDataFromMap(Map<Object, Object> data) {
+        var builder = new StringBuilder();
+        for (Map.Entry<Object, Object> entry : data.entrySet()) {
+            if (builder.length() > 0) {
+                builder.append("&");
+            }
+            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
+            builder.append("=");
+            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+        }
+        System.out.println(builder.toString());
+        return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
 }
